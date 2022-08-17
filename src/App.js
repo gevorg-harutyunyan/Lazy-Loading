@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react"
 import "./App.css"
-import { Div } from "./Div"
-import { next } from "./utils"
+import { ImageItem } from "./ImageItem"
+import { getData } from "./Api"
 
 export const App = () => {
-  const [data, setData] = useState(next())
+  const [datas, setDatas] = useState([])
 
   const scroll = () => {
     if (window.innerHeight + window.scrollY === document.body.scrollHeight) {
-      const newData = next()
-      setData([...data, ...newData])
+      getData(30).then((newData) => setDatas([...datas, ...newData]))
     }
   }
+
+  useEffect(() => {
+    getData(50).then((newData) => setDatas(newData))
+  }, [])
 
   useEffect(() => {
     document.addEventListener("scroll", scroll)
@@ -19,12 +22,12 @@ export const App = () => {
     return () => {
       document.removeEventListener("scroll", scroll)
     }
-  }, [data])
+  }, [datas])
 
   return (
     <div className="App">
-      {data.map(({ color, width }) => (
-        <Div key={color} color={color} width={width} />
+      {datas.map((data) => (
+        <ImageItem key={data.id} data={data} />
       ))}
     </div>
   )
